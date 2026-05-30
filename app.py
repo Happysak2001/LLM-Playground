@@ -94,42 +94,116 @@ html, body, [class*="css"] {
 </div>
 """, unsafe_allow_html=True)
 
-# Chapter grid
-chapters = [
-    ("#00f5ff", "01", "Foundations",   "How the model reads, thinks, and understands.",
-     ["Tokens", "Embeddings", "Context Windows", "Chunking"]),
-    ("#a855f7", "02", "Applications",  "Building things that actually work.",
-     ["Semantic Search", "RAG", "Memory", "Reranking"]),
-    ("#10b981", "03", "Agents",        "Systems that reason and act.",
-     ["Tool Calling", "Workflows", "Reasoning Loops"]),
-    ("#fbbf24", "04", "Production",    "Shipping AI that doesn't break.",
-     ["Streaming", "Caching", "FastAPI", "Docker"]),
+# ── Progress tracker ─────────────────────────────────────────────────────────
+PHASES = [
+    {
+        "num": "01", "color": "#00f5ff",
+        "title": "How LLMs Actually Work",
+        "desc":  "Understand what is happening inside the model before you build anything.",
+        "topics": [
+            ("Tokens",              True,  "How text becomes numbers"),
+            ("Embeddings",          True,  "How meaning becomes location"),
+            ("Context Windows",     False, "How much the model can remember"),
+            ("Temperature",         False, "How randomness affects output"),
+        ],
+    },
+    {
+        "num": "02", "color": "#a855f7",
+        "title": "Talking to Models Well",
+        "desc":  "Get reliable, useful output. This is where most engineers spend most of their time.",
+        "topics": [
+            ("Prompt Engineering",  False, "Zero-shot, few-shot, chain-of-thought"),
+            ("System Prompts",      False, "Shaping model behavior and persona"),
+            ("Structured Output",   False, "Getting back clean JSON every time"),
+            ("Hallucinations",      False, "Why models confabulate and how to reduce it"),
+        ],
+    },
+    {
+        "num": "03", "color": "#10b981",
+        "title": "Building Real Apps",
+        "desc":  "The most important phase. RAG alone unlocks 80% of real AI products.",
+        "topics": [
+            ("Calling the API",     False, "Claude / OpenAI SDK basics"),
+            ("Chunking",            False, "Splitting documents for retrieval"),
+            ("Vector Search",       False, "Finding meaning, not keywords"),
+            ("RAG",                 False, "Grounding models in real knowledge"),
+            ("Memory",              False, "Making conversations stateful"),
+        ],
+    },
+    {
+        "num": "04", "color": "#fbbf24",
+        "title": "Agents + Production",
+        "desc":  "Build systems that reason across multiple steps and run reliably at scale.",
+        "topics": [
+            ("Tool Calling",        False, "Giving the model hands"),
+            ("Reasoning Loops",     False, "ReAct pattern and self-correction"),
+            ("Streaming",           False, "Showing output token by token"),
+            ("Evaluation",          False, "Measuring if your app actually works"),
+        ],
+    },
 ]
 
 cols = st.columns(2)
-for i, (color, num, title, desc, topics) in enumerate(chapters):
+for i, phase in enumerate(PHASES):
     with cols[i % 2]:
-        tags = "".join(f"<span>{t}</span>" for t in topics)
-        lock = "" if num == "01" else '<span style="font-size:18px;position:absolute;top:24px;right:24px;opacity:0.2;">🔒</span>'
+        done_count = sum(1 for _, done, _ in phase["topics"] if done)
+        total      = len(phase["topics"])
+        pct        = int(done_count / total * 100)
+        color      = phase["color"]
+        is_active  = done_count > 0
+
+        topic_html = ""
+        for name, done, subtitle in phase["topics"]:
+            if done:
+                icon  = f'<span style="color:{color};font-weight:700;">✓</span>'
+                tcolor = "#e2e8f0"
+            else:
+                icon  = '<span style="color:#2d3748;">○</span>'
+                tcolor = "#475569"
+            topic_html += f"""
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">
+              <div style="width:16px;flex-shrink:0;font-size:13px;">{icon}</div>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:{tcolor};">{name}</div>
+                <div style="font-size:12px;color:#334155;">{subtitle}</div>
+              </div>
+            </div>"""
+
+        lock_icon = "" if is_active else '<div style="font-size:20px;position:absolute;top:22px;right:22px;opacity:0.15;">🔒</div>'
+
         st.markdown(f"""
-        <div class="chapter-card" style="margin-bottom:16px;">
-          {lock}
-          <div class="num" style="color:{color};">Chapter {num}</div>
-          <h3>{title}</h3>
-          <p>{desc}</p>
-          <div class="topics">{tags}</div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);
+                    border-radius:20px;padding:28px;margin-bottom:16px;position:relative;">
+          {lock_icon}
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                      color:{color};margin-bottom:8px;">Phase {phase['num']}</div>
+          <div style="font-size:19px;font-weight:800;color:#f1f5f9;margin-bottom:6px;
+                      letter-spacing:-0.5px;">{phase['title']}</div>
+          <div style="font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.55;">
+            {phase['desc']}
+          </div>
+          {topic_html}
+          <div style="margin-top:18px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;
+                        color:#334155;margin-bottom:6px;">
+              <span style="font-weight:600;letter-spacing:.5px;">PROGRESS</span>
+              <span style="color:{color};">{done_count} / {total}</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:99px;height:3px;">
+              <div style="width:{pct}%;height:3px;border-radius:99px;background:{color};
+                          box-shadow:0 0 8px {color}66;"></div>
+            </div>
+          </div>
         </div>
         """, unsafe_allow_html=True)
 
 st.markdown("""
-<div style="text-align:center;padding:56px 0 24px;">
-  <span style="font-size:14px;color:#1e293b;">
-    Start with Foundations → open
-  </span>
+<div style="text-align:center;padding:48px 0 16px;">
+  <span style="font-size:14px;color:#334155;">Continue where you left off → </span>
   <span style="font-size:15px;font-weight:700;
-    background:linear-gradient(90deg,#00f5ff,#a855f7);
+    background:linear-gradient(90deg,#a855f7,#00f5ff);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;"> Tokens </span>
-  <span style="font-size:14px;color:#1e293b;">in the sidebar</span>
+    background-clip:text;">Embeddings</span>
+  <span style="font-size:14px;color:#334155;"> in the sidebar</span>
 </div>
 """, unsafe_allow_html=True)

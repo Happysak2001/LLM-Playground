@@ -101,12 +101,12 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     st.page_link("app.py", label="Home")
-    st.markdown("""
-    <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-                color:#334155;padding:14px 14px 4px;">Foundations</div>
-    """, unsafe_allow_html=True)
-    st.page_link("pages/1_Tokens.py",    label="Tokens")
+    st.markdown('<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#334155;padding:14px 14px 4px;">Phase 1 — How LLMs Work</div>', unsafe_allow_html=True)
+    st.page_link("pages/1_Tokens.py",     label="Tokens")
     st.page_link("pages/2_Embeddings.py", label="Embeddings")
+    st.markdown('<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1e293b;padding:14px 14px 4px;">Phase 2 — Prompting</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1e293b;padding:2px 14px 4px;">Phase 3 — Building Apps</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1e293b;padding:2px 14px 4px;">Phase 4 — Agents</div>', unsafe_allow_html=True)
 
 
 # ════════════════════════════════════════════════════════════════════
