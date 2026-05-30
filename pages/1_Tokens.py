@@ -210,7 +210,7 @@ hr {
 with st.sidebar:
     st.markdown("""
     <div style="padding:20px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:12px;">
-      <div style="font-size:17px;font-weight:800;color:#f1f5f9;letter-spacing:-0.5px;">⚡ LLM Playground</div>
+      <div style="font-size:17px;font-weight:800;color:#f1f5f9;letter-spacing:-0.5px;">⚡ Happies Playground</div>
     </div>
     """, unsafe_allow_html=True)
     st.page_link("app.py", label="Home")

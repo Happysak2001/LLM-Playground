@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="LLM Playground",
+    page_title="Happies Playground",
     page_icon="⚡",
     layout="wide",
 )
@@ -85,7 +85,7 @@ html, body, [class*="css"] {
   </div>
   <h1 style="font-size:clamp(52px,8vw,90px);font-weight:800;letter-spacing:-2.5px;
              color:#f1f5f9;margin:0 0 22px;line-height:1.03;">
-    LLM<br><span class="neon">Playground</span>
+    Happies<br><span class="neon">Playground</span>
   </h1>
   <p style="font-size:19px;color:#475569;max-width:520px;line-height:1.7;margin:0 0 20px;">
     Most people use AI like a black box.<br>
