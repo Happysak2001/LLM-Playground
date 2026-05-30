@@ -3,29 +3,25 @@ import numpy as np
 
 st.set_page_config(page_title="Embeddings", page_icon="🧭", layout="wide")
 
-# ── Word vectors — GloVe 50d via gensim (no PyTorch, no ONNX) ────────────────
-@st.cache_resource(show_spinner="Downloading GloVe word vectors (65 MB, one time only)...")
+# ── Pre-computed GloVe 50d vectors (77KB file, no gensim needed) ─────────────
+@st.cache_resource
 def load_vectors():
-    import gensim.downloader
-    return gensim.downloader.load("glove-wiki-gigaword-50")
+    import json, os
+    base = os.path.dirname(os.path.dirname(__file__))
+    data = np.load(os.path.join(base, "data", "embeddings.npz"))
+    with open(os.path.join(base, "data", "vocab.json")) as f:
+        vocab = json.load(f)
+    vectors = data["vectors"].astype(np.float32)
+    return {w: vectors[i] for i, w in enumerate(vocab)}
 
 wv = load_vectors()
 
 def sentence_vec(text: str) -> np.ndarray | None:
-    """Average word vectors for all known words in the sentence."""
     tokens = text.lower().split()
     vecs = [wv[w] for w in tokens if w in wv]
     if not vecs:
         return None
     v = np.mean(vecs, axis=0).astype(np.float32)
-    norm = np.linalg.norm(v)
-    return v / max(norm, 1e-9)
-
-def word_vec(word: str) -> np.ndarray | None:
-    w = word.lower().strip()
-    if w not in wv:
-        return None
-    v = wv[w].astype(np.float32)
     return v / max(np.linalg.norm(v), 1e-9)
 
 def cosine(a: np.ndarray, b: np.ndarray) -> float:
@@ -359,8 +355,13 @@ with st.expander("📌 Concept 2 — You can do arithmetic with meaning"):
     result_norm = result / max(np.linalg.norm(result), 1e-9)
 
     # find closest in full vocabulary (exclude input words)
-    sims = wv.similar_by_vector(result_norm, topn=8)
-    filtered = [(w, s) for w, s in sims if w not in {word_a, word_b, word_c}][:5]
+    all_words_list = list(wv.keys())
+    all_vecs = np.array(list(wv.values()), dtype=np.float32)
+    scores = all_vecs @ result_norm
+    top_idx = np.argsort(-scores)
+    filtered = [(all_words_list[i], float(scores[i]))
+                for i in top_idx
+                if all_words_list[i] not in {word_a, word_b, word_c}][:5]
 
     st.markdown(f"""
     <div style="margin:16px 0;padding:20px;background:rgba(168,85,247,0.04);
